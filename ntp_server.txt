@@ -1,0 +1,37 @@
+NTP sunucusunu sorgular
+
+Tubitak time serve:  time.ume.tubitak.gov.tr
+
+w32tm /query /status
+
+Yeniden sonkronize yapmak için kullanılan komutlar
+w32tm /resync
+w32tm /resync /nowait
+
+PDC ntp olarak ayarlama
+
+w32tm.exe /config /manualpeerlist:”time.ume.tubitak.gov.tr,0x8" /syncfromflags:manual /reliable:yes /update
+
+w32tm.exe /config /manualpeerlist:”0.tr.pool.ntp.org,0x8 1.tr.pool.ntp.org,0x8 2.tr.pool.ntp.org,0x8 3.tr.pool.ntp.org,0x8" /syncfromflags:manual /reliable:yes /update
+
+w32tm.exe /config /update
+
+Restart-Service w32time
+
+
+
+Time server ayarlarını varsayılan yapmak için
+net stop w32time
+w32tm /unregister
+w32tm /register
+net start w32time
+
+
+Linux Servers
+
+timedatectl timesync-status
+
+nano /etc/systemd/timesyncd.conf
+
+[Time]
+NTP=10.160.221.21
