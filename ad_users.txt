@@ -39,7 +39,5 @@ $csvFilePath = "C:\csv\ad_users.csv"  # Çıktı dosyasının yolu
 $formattedUsers | Export-Csv -Path $csvFilePath -NoTypeInformation -Encoding UTF8
 
 ==============================================================================================================================================================
-Time Server 
-time.ume.tubitak.gov.tr
 
 
