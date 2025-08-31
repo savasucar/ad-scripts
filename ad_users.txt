@@ -1,0 +1,41 @@
+AD Kullaniciı Listesi Alma
+
+get-aduser -filter * -Properties * | select displayname, city, company, department, EmailAddress, telephonenumber | export-csv -path c:\temp\export-all.csv -Encoding UTF8
+-----------------------
+Get-ADUser -Filter * -Properties * -SearchBase "OU=BT,OU=TETRI,DC=tetri,DC=local" | select displayname, EmailAddress, telephonenumber, department, company, Enabled | export-csv -path c:\csv\bt_user1.csv -Encoding UTF8
+
+=========================================================================================================
+
+OU altindaki sunucu listesi alma
+
+$ouDN = 'OU=Tetri-Servers,DC=tetri,DC=local'
+$computers = Get-ADComputer -Filter * -SearchBase $ouDN -Property Name, DNSHostName, OperatingSystem, DistinguishedName
+$results = $computers | Select-Object Name, DNSHostName, OperatingSystem, @{Name='OrganizationalUnit'; Expression={($_.DistinguishedName -replace '^.*?,OU=', '') -replace ',DC=.*$', ''}}
+$outputPath = "C:\csv\sunucu_listesi.csv"
+$results | Export-Csv -Path $outputPath -NoTypeInformation -Encoding UTF8
+
+=========================================================================================================
+
+AD Grup Uyelerini Listeleme 
+Get-ADGroupMember -Identity SSLVPN | Select-Object name, objectClass,distinguishedName
+
+==========================================================================================================
+
+OU Altindaki kullanici Listesi Alma
+
+$ouDN = "OU=Tetri,DC=tetri,DC=local"
+
+$users = Get-ADUser -Filter * -SearchBase $ouDN -SearchScope Subtree -Properties GivenName, Surname, SamAccountName, Title, Department, Description, DistinguishedName
+
+$formattedUsers = $users | Select-Object @{Name='First Name';Expression={$_.GivenName}},
+                                          @{Name='Last Name';Expression={$_.Surname}},
+                                          @{Name='Logon Name';Expression={$_.SamAccountName}},
+                                          @{Name='Job Title';Expression={$_.Title}},
+                                          @{Name='Department';Expression={$_.Department}},
+                                          @{Name='Description';Expression={$_.Description}},
+                                          @{Name='OU';Expression={($_.DistinguishedName -replace '^.*?,OU=', '') -replace ',DC=.*$',''}} 
+
+$csvFilePath = "C:\csv\ad_users.csv"  # Çıktı dosyasının yolu
+$formattedUsers | Export-Csv -Path $csvFilePath -NoTypeInformation -Encoding UTF8
+
+==============================================================================================================================================================
