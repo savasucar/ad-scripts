@@ -39,5 +39,12 @@ $csvFilePath = "C:\csv\ad_users.csv"  # Çıktı dosyasının yolu
 $formattedUsers | Export-Csv -Path $csvFilePath -NoTypeInformation -Encoding UTF8
 
 ==============================================================================================================================================================
+Domaine üye olan sunucularda administrator hesaplarını listeleme
+
+$PCs = Get-ADComputer -Filter * -SearchBase "OU=Tetri-Server,DC=tetri,DC=local" | Select-Object DNSHostName
+$data = foreach($PC in $PCs) {
+    Invoke-Command -ComputerName $PC.DNSHostName -ScriptBlock {Get-LocalGroupMember -Group "Administrators"} | Select @{name='server'; expression={$PC.DNSHostName}}, Name
+}
+$data | Export-Csv -Path C:\Script\admins.csv -NoTypeInformation
 
 
