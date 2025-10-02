@@ -1,0 +1,55 @@
+Network Ayarlari
+
+deb01# cat /etc/network/interfaces
+
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+source /etc/network/interfaces.d/*
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# The primary network interface
+allow-hotplug ens33
+iface ens33 inet static
+        address 10.21.32.28/24
+        gateway 10.21.32.3
+        # dns-* options are implemented by the resolvconf package, if installed
+        dns-nameservers 10.21.32.10 10.21.32.11 10.6.29.10
+        dns-search tetri.local
+-----------------------------------
+deb01#cat /etc/resolv.conf
+
+search tetri.local
+nameserver 10.21.32.10
+nameserver 10.21.32.11
+nameserver 10.6.29.10
+-----------------------------------------
+NTP Ayari
+
+deb01# systemctl status systemd-timesyncd
+
+deb01# vim /etc/systemd/timesyncd.con
+
+# add to last line : set NTP server for your timezone
+NTP=ntpserver.tetri.local
+
+deb01# systemctl restart systemd-timesyncd
+
+root@tetri-deb01:/home/savas# timedatectl timesync-status
+       Server: 10.21.32.10 (ntpserver.tetri.local)
+Poll interval: 1min 4s (min: 32s; max 34min 8s)
+         Leap: normal
+      Version: 3
+      Stratum: 2
+    Reference: C21BDE05
+    Precision: 1us (-23)
+Root distance: 386.832ms (max: 5s)
+       Offset: +17.713ms
+        Delay: 552us
+       Jitter: 0
+ Packet count: 1
+    Frequency: +500.000ppm
+
