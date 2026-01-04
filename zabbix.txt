@@ -1,0 +1,54 @@
+
+
+https://sistemdostu.com/zabbix-7-0-standalone-kurulum-ubuntu-24-04/
+https://sistemdostu.com/zabbix-agent-ve-agent2-kurulumu-ve-modlari/
+
+https://deniz-turkmen.medium.com/zabbix-kurulumu-34fc06b4d963
+
+
+zcat /usr/share/zabbix/sql-scripts/postgresql/server.sql.gz | sudo -u zabbix psql zabbix
+
+/usr/share/zabbix/sql-scripts/postgresql/
+
+
+ssl işlemleri
+
+sudo mkdir -p /etc/ssl/zabbix
+
+sudo openssl pkcs12 -in tetrizbx.pfx -nocerts -out cert-encrypted.key
+sudo openssl rsa -in cert-encrypted.key -out cert.key
+sudo openssl pkcs12 -in tetrizbx.pfx -clcerts -nokeys -out cert.crt
+sudo openssl pkcs12 -in tetrizbx.pfx -nokeys -nodes -cacerts -out ca-bundle.crt
+
+
+
+
+sudo nano /etc/apache2/sites-available/zabbix-ssl.conf
+
+
+<VirtualHost *:443>
+    ServerName tetri-zbx.tetri.local
+
+    DocumentRoot /usr/share/zabbix
+
+    SSLEngine on
+    SSLCertificateFile     /etc/ssl/zabbix/cert.crt
+    SSLCACertificateFile   /etc/ssl/zabbix/ca-bundle.crt
+    SSLCertificateKeyFile  /etc/ssl/zabbix/cert.key
+
+
+    <Directory "/usr/share/zabbix">
+        Options FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/zabbix_ssl_error.log
+    CustomLog ${APACHE_LOG_DIR}/zabbix_ssl_access.log combined
+</VirtualHost>
+
+
+
+sudo a2ensite zabbix-ssl
+sudo systemctl reload apache2
+
