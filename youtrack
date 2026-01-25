@@ -1,0 +1,5 @@
+openssl pkcs12 -nocerts -out priv.pem -in tetri-youtrack.pfx
+
+openssl pkcs12 -clcerts -nokeys -out cert.pem -in tetri-youtrack.pfx
+
+openssl pkcs12 -nokeys -nodes -cacerts -out ca-cert.pem -in tetri-youtrack.pfx
